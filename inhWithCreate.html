@@ -1,0 +1,87 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <script>
+// реалізація наслідування задопомогою Object.create()
+    (function(){
+        // Функція-конструктор бітьківського "класу" Animal
+        var Animal=function (age, name,sound, region){
+                        this.age=age;
+                        this.name=name;
+                        this.sound=sound;
+                        this.region=region;           
+        };
+        //Методи записуємо у прототип об'єкта. Задля того щоб кожен створений об'єкт не містив у собі повторюваний код.
+        Animal.prototype.say=function(){
+                        alert(this.name+" say "+this.sound);
+        };
+       
+
+        //Функції-конструктори класів Cat, Woodpecker, Dog
+        var Cat=function(age, name,sound, regio){
+            //використовуємо констуктор батьківського класу для об'єкту дочірнього класу
+            Animal.apply(this, arguments);
+        };
+        // У явному вигляді зберігаємо послання на конструктор.
+        Cat.prototype.constructor = Cat;
+        // Реалізуємо наслідування. Причому ланцюг наслідування буде не від батьківського до доірнього класу, а від їх прототипів.
+        Cat.prototype=Object.create(Animal.prototype);
+        // Власне метод об'єкту Cat
+        Cat.prototype.goAway=function(){
+           alert("It's time to came back to "+this.region+". But i just want to make sure you're OK with this.");
+        };
+        
+        
+        var Woodpecker=function(age, name,sound, regio){
+            Animal.apply(this, arguments);
+        };
+        Woodpecker.prototype.constructor = Woodpecker;
+        Woodpecker.prototype=Object.create(Animal.prototype);
+        Woodpecker.prototype.goAway=function(){
+            alert("Last annoing sound from "+this.region+". Doodle-do!");
+        };
+        
+        
+        var Dog=function(age, name,sound, regio){
+            Animal.apply(this, arguments);
+        };
+        Dog.prototype.constructor = Dog;
+        Dog.prototype=Object.create(Animal.prototype);
+        Dog.prototype.goAway=function(){
+           alert("It's time to came back to "+this.region+". But i just want to make sure you're OK with this.");
+        };
+        // одразу модифікована функція визначення "типу" без instanceof.
+        // звичайно можна було б ввести додаткові властивості кожному з дочірніх об'єктів, які б містили у собі назву об'єкту. Така реалізація була б компактнішою. Проте переваги мого методу у тому , що ми визначаємо тип о'бєкту , за вже існуючим методом. Тобто, якщо метод об'єкту "класу" ідентичний методу самого "класу", це означає що об'єкт належить цьому класу. 
+        function getType(obj){
+            var context;
+            if(obj){context=obj;} else {context=this;}// перевірка чи ми викликаємо вункці поза контекстом 
+
+                switch(context.goAway)
+                {
+                   case Dog.prototype.goAway: alert (context.name + ' member of the Dog type'); break;
+                   case Woodpecker.prototype.goAway: alert (context.name + ' member of the Woodpecker type'); break;
+                   case Cat.prototype.goAway: alert (context.name + ' member of the Cat type'); break;
+                   default: alert ('Is not member of any type');
+                }
+        }
+   
+
+        var cat=new Cat(12,"Alice", "Meow", "Vien");
+        var woody=new Woodpecker(12,"Woody", "Doodle-do", "Minsk" );
+        var puppy=new Dog(1, "Charly", "Bark-bark", "Oslo");
+
+        cat.say();
+        cat.goAway();
+        woody.say();
+        puppy.say();
+
+        getType(puppy);
+        getType.apply(woody);
+
+})()
+        
+              
+      </script>
+    </body>
+  </html>
